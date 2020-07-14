@@ -40,7 +40,7 @@ function Location (city, longLats){
 
 function Weather (totes){
     this.forecast = totes.weather.description;
-    this.time = new Date(totes.valid_date).toDateString;
+    this.time = new Date(totes.valid_date).toDateString();
 };
 
 console.log("what do you think about that? HUH?")
