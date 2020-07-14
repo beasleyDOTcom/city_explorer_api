@@ -9,25 +9,26 @@ require('dotenv').config();
 app.use(cors());
 const PORT = process.env.PORT || 3001;
 app.get('/location', (request, response) => {
+    try{
         let longLats = require('./data/location.json');
-        // console.log(request);
         let city = request.query.city;
-        // let cityName = ((longLats) => {
-        //     let city = longLats[0].display_name.split(',');
-        //     console.log("this is your city", city[0]);
-        // });
     const obj = new Location(city, longLats);
-// console.log(obj);
-    response.send(obj);
-// this is the end of the try.        
+    response.status(200).send(obj);        
+    }  catch(error){
+        console.log('ERROR', error);
+        response.status(500).send('we messed ooops-sorry');
+      }
 });
+//
+
+
 app.get('/weather', (request, response) => {
     let weatherMan = require('./data/weather.json');
     let newArr = [];
     weatherMan.data.forEach(haha =>{
         newArr.push(new Weather(haha));
     });
-    response.send(newArr);
+    response.status(200).send(newArr);
 });
 
 function Location (city, longLats){
