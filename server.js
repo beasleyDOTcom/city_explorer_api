@@ -24,10 +24,13 @@ app.get('/location', (request, response) => {
 
 app.get('/weather', (request, response) => {
     let weatherMan = require('./data/weather.json');
-    let newArr = [];
-    weatherMan.data.forEach(haha =>{
-        newArr.push(new Weather(haha));
-    });
+    let newArr = weatherMan.data.map(day => {
+        return new Weather(day);
+    })
+
+    // weatherMan.data.forEach(haha =>{
+    //     newArr.push(new Weather(haha));
+    // });
     response.status(200).send(newArr);
 });
 
