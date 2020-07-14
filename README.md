@@ -10,9 +10,10 @@ I am building an API server, which will provide data for the City Explorer Appli
 We are going to build a server that will reveive a search queiry from the user. Then connect that search quiery with the corelated map and weather data, then return that data back to the client in the format in which it requires. 
 
 ## Architecture
-<!-- Provide a detailed description of the application design. What technologies (languages, libraries, etc) you're using, and any other relevant design information. -->
+This server/app uses node, express, cors.
 
 ## Change Log
-<!-- Use this area to document the iterative changes made to your application as each feature is successfully implemented. Use time stamps. Here's an examples:
-
+I got the first feature working at 6pm.
+second feature done around 7:30pm
+and the third at 8:15pm.
 01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource.
