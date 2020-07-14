@@ -9,22 +9,24 @@ require('dotenv').config();
 app.use(cors());
 const PORT = process.env.PORT || 3001;
 app.get('/location', (request, response) => {
-        let longLats = require('data/location.json');
-        let cityName = ((longLats) => {
-            let city = longLats[0].display_name.split(',');
-            console.log("this is your city", city[0]);
-        });
-    const obj = new Location(longLats);
-
+        let longLats = require('./data/location.json');
+        console.log(request);
+        let city = request.query.city;
+        // let cityName = ((longLats) => {
+        //     let city = longLats[0].display_name.split(',');
+        //     console.log("this is your city", city[0]);
+        // });
+    const obj = new Location(city, longLats);
+// console.log(obj);
+    response.send(obj);
 // this is the end of the try.        
 });
 
-function Location (longLats){
-    this.search_query = city[0];
+function Location (city, longLats){
+    this.search_query = city;
     this.formatted_query = longLats[0].display_name;
     this.latitude = longLats[0].lon;
     this.longitude = longLats[0].lat;
-    
 };
 
 
