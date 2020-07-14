@@ -10,7 +10,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3001;
 app.get('/location', (request, response) => {
         let longLats = require('./data/location.json');
-        console.log(request);
+        // console.log(request);
         let city = request.query.city;
         // let cityName = ((longLats) => {
         //     let city = longLats[0].display_name.split(',');
@@ -21,6 +21,14 @@ app.get('/location', (request, response) => {
     response.send(obj);
 // this is the end of the try.        
 });
+app.get('/weather', (request, response) => {
+    let weatherMan = require('./data/weather.json');
+    let newArr = [];
+    weatherMan.data.forEach(haha =>{
+        newArr.push(new Weather(haha));
+    });
+    response.send(newArr);
+});
 
 function Location (city, longLats){
     this.search_query = city;
@@ -29,6 +37,10 @@ function Location (city, longLats){
     this.longitude = longLats[0].lat;
 };
 
+function Weather (totes){
+    this.forecast = totes.weather.description;
+    this.time = totes.valid_date;
+}
 
 console.log("what do you think about that? HUH?")
 app.get('*', (request, response) => {
