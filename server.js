@@ -13,17 +13,18 @@ app.get('/location', (request, response) => {
         let cityName = ((longLats) => {
             let city = longLats[0].display_name.split(',');
             console.log("this is your city", city[0]);
-            
         });
-        const obj = new Location(longLats);
+    const obj = new Location(longLats);
 
 // this is the end of the try.        
 });
 
-function Location (location){
-    this.search_query = 
-    this.longitude =
-    this.latitude =
+function Location (longLats){
+    this.search_query = city[0];
+    this.formatted_query = longLats[0].display_name;
+    this.latitude = longLats[0].lon;
+    this.longitude = longLats[0].lat;
+    
 };
 
 
