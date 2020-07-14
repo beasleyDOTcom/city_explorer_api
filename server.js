@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 
-//this bouncer would let a highschooler into the bar
+//this bouncer (cors) would let a highschooler into the bar
 app.use(cors());
 const PORT = process.env.PORT || 3001;
 app.get('/location', (request, response) => {
@@ -40,8 +40,8 @@ function Location (city, longLats){
 
 function Weather (totes){
     this.forecast = totes.weather.description;
-    this.time = totes.valid_date;
-}
+    this.time = new Date(totes.valid_date).toDateString;
+};
 
 console.log("what do you think about that? HUH?")
 app.get('*', (request, response) => {
