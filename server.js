@@ -1,24 +1,51 @@
 'use strict';
-
+//all your libraries
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const superagent = require('superagent');
+const { json } = require('express');
 require('dotenv').config();
 
 //this bouncer (cors) would let a highschooler into the bar
 app.use(cors());
 const PORT = process.env.PORT || 3001;
-app.get('/location', (request, response) => {
-    try{
-        let longLats = require('./data/location.json');
-        let city = request.query.city;
-    const obj = new Location(city, longLats);
-    response.status(200).send(obj);        
-    }  catch(error){
-        console.log('ERROR', error);
-        response.status(500).send('we messed ooops-sorry');
-      }
-});
+
+
+
+
+//let's get the data from the location api
+app.get('/location', bungleLocation);
+function bungleLocation(request, response){    
+    let city = request.query.city;
+    let url = 'https://us1.locationiq.com/v1/search.php';
+    let mapParams = {
+        key: process.env.GEOCODE_API_KEY,
+        q: city,
+        format: 'json',
+        limit: 1
+    };
+    superagent.get(url)
+        .query(mapParams)
+        .then(resultFromSuperagent => {
+            console.log("these are my results from superagent", resultFromSuperagent.body)
+            let mapData = resultFromSuperagent.body;
+            const obj = new Location(city, mapData);
+            response.send(obj);
+        }).catch((error) => {
+            console.log("error with superagent", error);
+            response.status(500).send("we messed OOPS orry");
+        });
+}
+    //let longLats = require('./data/location.json');
+     //   let city = request.query.city;
+//     const obj = new Location(city, longLats);
+//     response.status(200).send(obj);        
+//     }  catch(error){
+//         console.log('ERROR', error);
+//         response.status(500).send('we messed ooops-sorry');
+//       }
+// });
 //
 
 
@@ -37,8 +64,8 @@ app.get('/weather', (request, response) => {
 function Location (city, longLats){
     this.search_query = city;
     this.formatted_query = longLats[0].display_name;
-    this.latitude = longLats[0].lon;
-    this.longitude = longLats[0].lat;
+    this.latitude = longLats[0].lat;
+    this.longitude = longLats[0].lon;
 };
 
 function Weather (totes){
