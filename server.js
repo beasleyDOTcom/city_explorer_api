@@ -5,6 +5,8 @@ const app = express();
 const cors = require('cors');
 const superagent = require('superagent');
 const { json } = require('express');
+let lotty = '';
+let latty = '';
 require('dotenv').config();
 
 //this bouncer (cors) would let a highschooler into the bar
@@ -25,10 +27,10 @@ function bungleLocation(request, response){
         format: 'json',
         limit: 1
     };
+    
     superagent.get(url)
         .query(mapParams)
         .then(resultFromSuperagent => {
-            console.log("these are my results from superagent", resultFromSuperagent.body)
             let mapData = resultFromSuperagent.body;
             const obj = new Location(city, mapData);
             response.send(obj);
@@ -37,30 +39,54 @@ function bungleLocation(request, response){
             response.status(500).send("we messed OOPS orry");
         });
 }
-    //let longLats = require('./data/location.json');
-     //   let city = request.query.city;
-//     const obj = new Location(city, longLats);
-//     response.status(200).send(obj);        
-//     }  catch(error){
-//         console.log('ERROR', error);
-//         response.status(500).send('we messed ooops-sorry');
-//       }
-// });
-//
 
-
-app.get('/weather', (request, response) => {
-    let weatherMan = require('./data/weather.json');
-    let newArr = weatherMan.data.map(day => {
-        return new Weather(day);
-    })
-
-    // weatherMan.data.forEach(haha =>{
-    //     newArr.push(new Weather(haha));
-    // });
-    response.status(200).send(newArr);
-});
-
+app.get('/weather', bungleWeather);
+function bungleWeather(request, response){    
+    let city = request.query.city;
+    let url = 'https://api.weatherbit.io/v2.0/forecast/daily';
+    let weatherParams = {
+        key: process.env.WEATHER_API_KEY,
+        lat: request.query.latitude,
+        lon: request.query.longitude,
+        format: 'json',
+        days: 8
+    };
+    superagent.get(url)
+        .query(weatherParams)
+        .then(resultFromSuperagent => {
+            let weatherData = resultFromSuperagent.body;
+            let weatherDays = weatherData.data.map(day => {
+                return new Weather(day);
+        })
+        response.send(weatherDays);
+    }).catch((error) => {
+            console.log("error with superagent", error);
+            response.status(500).send("we messed OOPS orry");
+        });
+}
+// hiking section:
+app.get('/trails', bungleTrails);
+function bungleTrails(request, response){    
+    let url = 'https://www.hikingproject.com/data/get-trails';
+    let trailParams = {
+        key: process.env.TRAIL_API_KEY,
+        lat: request.query.latitude,
+        lon: request.query.longitude
+    };
+    superagent.get(url)
+        .query(trailParams)
+        .then(resultFromSuperagent => {
+            console.log("these are my results from my trails superagent", resultFromSuperagent.body.trails)
+            let hikes = resultFromSuperagent.body.trails.map(hike => {
+                return new Trail(hike);
+        })
+        console.log("this is the total hikes object", hikes);
+        response.send(hikes);
+    }).catch((error) => {
+            console.log("error with superagent", error);
+            response.status(500).send("we messed OOPS orry");
+        });
+}
 function Location (city, longLats){
     this.search_query = city;
     this.formatted_query = longLats[0].display_name;
@@ -73,9 +99,21 @@ function Weather (totes){
     this.time = new Date(totes.valid_date).toDateString();
 };
 
-console.log("what do you think about that? HUH?")
+function Trail (obj){
+    this.name = obj.name;
+    this.location = obj.location;
+    this.length = obj.length;
+    this.stars = obj.stars;
+    this.star_votes =  obj.starVotes;
+    this.summary = obj.summary;
+    this.trail_url = obj.url;
+    this.conditions = obj.conditionDetails;
+    this.condition_date = obj.conditionDate;
+    this.condition_time = obj.condition_time;
+}
+
 app.get('*', (request, response) => {
-    response.status(404).send('HAHA SUCKER! PAGE NOT FOUND');
+    response.status(404).send('HAHA SUCKER! you are cool but.... PAGE NOT FOUND');
 });
 
 app.listen(PORT, () => {
