@@ -4,19 +4,24 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const superagent = require('superagent');
-const { json } = require('express');
-let lotty = '';
-let latty = '';
 require('dotenv').config();
+const pg = require('pg');
 
 //this bouncer (cors) would let a highschooler into the bar
 app.use(cors());
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => {
+    console.log('er ROAR!!!', err);
+});
+
 const PORT = process.env.PORT || 3001;
-
-
-
-
+//if you need to close all of your ports. In your termnial you 'pkill node'
 //let's get the data from the location api
+
+
+
+
+
 app.get('/location', bungleLocation);
 function bungleLocation(request, response){    
     let city = request.query.city;
@@ -33,7 +38,7 @@ function bungleLocation(request, response){
         .then(resultFromSuperagent => {
             let mapData = resultFromSuperagent.body;
             const obj = new Location(city, mapData);
-            response.send(obj);
+            response.status(200).send(obj);
         }).catch((error) => {
             console.log("error with superagent", error);
             response.status(500).send("we messed OOPS orry");
