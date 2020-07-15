@@ -24,4 +24,7 @@ finished the second feature at 6:30 pm 7/14/2020
 01-01-2001 4:59pm - Application now has a fully-functional express server, with a GET route for the location resource.
 I got succesfully connected the location api and my app with the front end website at 3:45 pm July 14th 2020.
 
+just finished feature 3 / trail data 8 pm July 14th 2020
+
+
 
