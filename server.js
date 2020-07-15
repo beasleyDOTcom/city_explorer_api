@@ -5,6 +5,8 @@ const app = express();
 const cors = require('cors');
 const superagent = require('superagent');
 const { json } = require('express');
+let lotty = '';
+let latty = '';
 require('dotenv').config();
 
 //this bouncer (cors) would let a highschooler into the bar
@@ -25,6 +27,7 @@ function bungleLocation(request, response){
         format: 'json',
         limit: 1
     };
+    
     superagent.get(url)
         .query(mapParams)
         .then(resultFromSuperagent => {
@@ -49,18 +52,43 @@ function bungleLocation(request, response){
 //
 
 
-app.get('/weather', (request, response) => {
-    let weatherMan = require('./data/weather.json');
-    let newArr = weatherMan.data.map(day => {
-        return new Weather(day);
-    })
+// app.get('/weather', (request, response) => {
+//     let weatherMan = require('./data/weather.json');
+//     let newArr = weatherMan.data.map(day => {
+//         return new Weather(day);
+//     })
 
-    // weatherMan.data.forEach(haha =>{
-    //     newArr.push(new Weather(haha));
-    // });
-    response.status(200).send(newArr);
-});
-
+//     // weatherMan.data.forEach(haha =>{
+//     //     newArr.push(new Weather(haha));
+//     // });
+//     response.status(200).send(newArr);
+// });
+app.get('/weather', bungleWeather);
+function bungleWeather(request, response){    
+    let city = request.query.city;
+    let url = 'https://api.weatherbit.io/v2.0/forecast/daily';
+    let weatherParams = {
+        key: process.env.WEATHER_API_KEY,
+        lat: request.query.latitude,
+        lon: request.query.longitude,
+        format: 'json',
+        days: 8
+    };
+    superagent.get(url)
+        .query(weatherParams)
+        .then(resultFromSuperagent => {
+            console.log("these are my results from weather superagent", resultFromSuperagent.body.data)
+            let weatherData = resultFromSuperagent.body;
+            let weatherDays = weatherData.data.map(day => {
+                return new Weather(day);
+          
+        })
+        response.send(weatherDays);
+    }).catch((error) => {
+            console.log("error with superagent", error);
+            response.status(500).send("we messed OOPS orry");
+        });
+}
 function Location (city, longLats){
     this.search_query = city;
     this.formatted_query = longLats[0].display_name;
