@@ -28,6 +28,7 @@ just finished feature 3 / trail data 8 pm July 14th 2020
 #### 
 It took me about 6 hours to to complete these features.
 I didn't really understand the trello cards at first, and it took a lot of help from Chance, David, and Meghan to get through it. 
+I didn't read the thing about making a time estimate until now... 10pm. I started at 1:30pm and finished at 10pm 7/15/2020.
 
 
 
