@@ -21,27 +21,15 @@ app.get('/weather', bungleWeather);
 app.get('/trails', bungleTrails);
 // what does the database return if it doesn't have what I'm looking for?
 //what does the API return if it doesn't have what I'm looking for?
-//create if/else, if both return NaN or whatever return ''?
 function addLocation(object){
-    // add city name, formatted city name, latitude, and longitude.
-    console.log('search query (city):', object.query.search_query)
-    console.log('latitude here:', object.query.latitude)
     let search_query = object.search_query;
     let formatted_query = object.formatted_query;
     let latitude = object.latitude;
     let longitude = object.longitude;
-    let sqlStatement = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4, $5);';
+    let sqlStatement = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4);';
     let safeValues = [search_query, formatted_query, latitude, longitude];
     client.query(sqlStatement, safeValues);
 }
-// function getLocations(request, response){
-//     let sql = 'SELECT search_query FROM locations;';
-//     client.query(sql)
-//     .then(resultsFromPostgres => {
-//         let city = resultsFromPostgres.rows;
-//         response.send(city);
-//     }).catch( err => console.log(err));
-// }
 
 function bungleLocation(request, response){    
     let city = request.query.city;
@@ -68,7 +56,6 @@ function bungleLocation(request, response){
                 addLocation(obj);
                 response.status(200).send(obj);
             }).catch((error) => {
-                console.log("error with superagent", error);
                 response.status(500).send("we messed OOPS orry");
             });
 
@@ -111,11 +98,9 @@ function bungleTrails(request, response){
     superagent.get(url)
         .query(trailParams)
         .then(resultFromSuperagent => {
-            console.log("these are my results from my trails superagent", resultFromSuperagent.body.trails)
             let hikes = resultFromSuperagent.body.trails.map(hike => {
                 return new Trail(hike);
         })
-        console.log("this is the total hikes object", hikes);
         response.send(hikes);
     }).catch((error) => {
             console.log("error with superagent", error);
