@@ -18,18 +18,7 @@ const PORT = process.env.PORT || 3001;
 //let's get the data from the location api
 app.get('/location', bungleLocation);
 app.get('/weather', bungleWeather);
-app.get('/trails', bungleTrails);
-// what does the database return if it doesn't have what I'm looking for?
-//what does the API return if it doesn't have what I'm looking for?
-function addLocation(object){
-    let search_query = object.search_query;
-    let formatted_query = object.formatted_query;
-    let latitude = object.latitude;
-    let longitude = object.longitude;
-    let sqlStatement = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4);';
-    let safeValues = [search_query, formatted_query, latitude, longitude];
-    client.query(sqlStatement, safeValues);
-}
+app.get('/movies', movieFunk);
 
 function bungleLocation(request, response){    
     let city = request.query.city;
@@ -38,9 +27,11 @@ function bungleLocation(request, response){
     client.query(searchString, safeValues)
     .then(location =>{
         if(location.rowCount > 0){
-            response.send(location.rows[0]);
+            response.status(200).send(location.rows[0]);
+            console.log("you had the search query in the database");
         }
         else{
+            console.log("you did not have the search query in the database");
             let url = 'https://us1.locationiq.com/v1/search.php';
             let mapParams = {
                 key: process.env.GEOCODE_API_KEY,
@@ -53,7 +44,10 @@ function bungleLocation(request, response){
             .then(resultFromSuperagent => {
                 let mapData = resultFromSuperagent.body;
                 const obj = new Location(city, mapData);
-                addLocation(obj);
+                let sqlStatement = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4);';
+                let safeValues = [obj.search_query, obj.formatted_query, obj.latitude, obj.longitude];
+                client.query(sqlStatement, safeValues);
+
                 response.status(200).send(obj);
             }).catch((error) => {
                 response.status(500).send("we messed OOPS orry");
@@ -62,7 +56,25 @@ function bungleLocation(request, response){
         }
         })
     };
-
+function movieFunk (request, response){
+    let city = request.query.city;
+    let url = 'https://api.themoviedb.org/3/movie';
+    let movieParams = {
+        api_key: process.env.MOVIE_API_KEY,
+        query: request.query.city
+    };
+    superagent.get(url)
+        .query(movieParams)
+        .then(resultsFromMovieApi => {
+            console.log("these are my results from the movie api", resultsFromMovieApi);
+            let movieData = resultsFromMovieApi.body.results;
+            const obj = movieData.forEach(movie => {
+                return new movieData(movie);
+            });
+        }).catch( error => {
+            console.log('Are we in Jurasic Park? because we\'ve got Air ROARRrrrRr', error);
+        });
+}
 function bungleWeather(request, response){    
     let city = request.query.city;
     let url = 'https://api.weatherbit.io/v2.0/forecast/daily';
@@ -131,6 +143,15 @@ function Trail (obj){
     this.condition_date = obj.conditionDate;
     this.condition_time = obj.condition_time;
 }
+function Movie (movie){
+this.title = movie.title;
+this.overview = movie.overview;
+this.average_votes = movie.vote_average;
+this.total_votes = movie.vote_count;
+this.image_url = movie.poster_path;
+this.popularity = movie.popularity;
+this.released_on = release_date;
+};
 
 app.get('*', (request, response) => {
     response.status(404).send('HAHA SUCKER! you are cool but.... PAGE NOT FOUND');
