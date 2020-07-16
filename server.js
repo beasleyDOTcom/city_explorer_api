@@ -8,7 +8,7 @@ require('dotenv').config();
 const pg = require('pg');
 //this bouncer (cors) would let a highschooler into the bar
 app.use(cors());
-const client = new pg.Client(process.env.WINDOWS_DATABASE_URL);
+const client = new pg.Client(process.env.DATABASE_URL);
 client.on('error', err => {
     console.log('er ROAR!!! on line 13', err);
 });
