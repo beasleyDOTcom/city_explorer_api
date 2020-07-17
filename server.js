@@ -18,10 +18,12 @@ const PORT = process.env.PORT || 3001;
 //let's get the data from the location api
 app.get('/location', bungleLocation);
 app.get('/weather', bungleWeather);
+app.get('/trails', bungleTrails);
 app.get('/movies', movieFunk);
 
 function bungleLocation(request, response){    
     let city = request.query.city;
+    console.log(request);
     let safeValues = [city];
     let searchString = 'SELECT * FROM locations WHERE search_query=$1;';
     client.query(searchString, safeValues)
@@ -57,18 +59,20 @@ function bungleLocation(request, response){
         })
     };
 function movieFunk (request, response){
-    let city = request.query.city;
-    let url = 'https://api.themoviedb.org/3/movie';
+    let city = request.query.search_query;
+    let url = 'https://api.themoviedb.org/3/search/movie';
     let movieParams = {
         api_key: process.env.MOVIE_API_KEY,
-        query: request.query.city
+        query: city
     };
     superagent.get(url)
         .query(movieParams)
         .then(resultsFromMovieApi => {
-            console.log("these are my results from the movie api", resultsFromMovieApi);
+            console.log(url," url and the movie params", movieParams);
             let movieData = resultsFromMovieApi.body.results;
+            console.log("this is the movieData results hahahahah", movieData);
             const obj = movieData.forEach(movie => {
+                console.log("this is the object inside of the movie data fo reach", obj)
                 return new movieData(movie);
             });
         }).catch( error => {
