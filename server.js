@@ -20,6 +20,7 @@ app.get('/location', bungleLocation);
 app.get('/weather', bungleWeather);
 app.get('/trails', bungleTrails);
 app.get('/movies', movieFunk);
+app.get('/yelp', pleaseYelpMe);
 
 function bungleLocation(request, response){    
     let city = request.query.city;
@@ -68,9 +69,7 @@ function movieFunk (request, response){
     superagent.get(url)
         .query(movieParams)
         .then(resultsFromMovieApi => {
-            // console.log(url," url and the movie params", movieParams);
             let movieData = resultsFromMovieApi.body.results;
-            console.log("this is the movieData", movieData);
             const carl = movieData.map(movie => {
                 return new Movie(movie);
 
@@ -78,6 +77,30 @@ function movieFunk (request, response){
             response.status(200).send(carl);
         }).catch( error => {
             console.log('Are we in Jurasic Park? because we\'ve got Air ROARRrrrRr', error);
+        });
+}
+function pleaseYelpMe(request, response){
+    const numPerPage = 5;
+    const page = request.query.page || +1;
+    const start = ((page -1) * numPerPage + 1);
+    let url = 'https://api.yelp.com/v3/businesses/search';
+    let yelpParams = {
+       latitude: request.query.latitude,
+       longitude: request.query.longitude,
+       start: start,
+       limit: numPerPage
+    };
+    superagent.get(url)
+        .set({'Authorization':`Bearer ${process.env.YELP_API_KEY}`})
+        .query(yelpParams)
+        .then(resultsFromYelpApi => {
+            const resultsArray = resultsFromYelpApi.body.businesses;
+            const restaurantData = resultsArray.map(eatery => {
+                return new Restaurant(eatery);
+            });
+            response.status(200).send(restaurantData);
+        }).catch( error => {
+            console.log("We've got errorstaurant problems", error);
         });
 }
 function bungleWeather(request, response){    
@@ -135,7 +158,13 @@ function Weather (totes){
     this.forecast = totes.weather.description;
     this.time = new Date(totes.valid_date).toDateString();
 };
-
+function Restaurant(eatery){
+    this.name = eatery.name;
+    this.image_url = eatery.image_url;
+    this.price = eatery.price;
+    this.rating = eatery.rating;
+    this.url = eatery.url;
+}
 function Trail (obj){
     this.name = obj.name;
     this.location = obj.location;
@@ -149,14 +178,14 @@ function Trail (obj){
     this.condition_time = obj.condition_time;
 }
 function Movie (moovie){
-this.title = moovie.title;
-this.overview = moovie.overview;
-this.average_votes = moovie.vote_average;
-this.total_votes = moovie.vote_count;
-this.image_url = moovie.poster_path;
-this.popularity = moovie.popularity;
-this.released_on = moovie.release_date;
-console.log(moovie, 'this is moovie town')
+    this.title = moovie.title;
+    this.overview = moovie.overview;
+    this.average_votes = moovie.vote_average;
+    this.total_votes = moovie.vote_count;
+    this.image_url = `https://image.tmdb.org/t/p/original${moovie.poster_path}`;
+    this.popularity = moovie.popularity;
+    this.released_on = moovie.release_date;
+
 };
 
 app.get('*', (request, response) => {
