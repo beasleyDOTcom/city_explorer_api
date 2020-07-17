@@ -23,7 +23,7 @@ app.get('/movies', movieFunk);
 
 function bungleLocation(request, response){    
     let city = request.query.city;
-    console.log(request);
+    // console.log(request);
     let safeValues = [city];
     let searchString = 'SELECT * FROM locations WHERE search_query=$1;';
     client.query(searchString, safeValues)
@@ -68,13 +68,14 @@ function movieFunk (request, response){
     superagent.get(url)
         .query(movieParams)
         .then(resultsFromMovieApi => {
-            console.log(url," url and the movie params", movieParams);
+            // console.log(url," url and the movie params", movieParams);
             let movieData = resultsFromMovieApi.body.results;
-            console.log("this is the movieData results hahahahah", movieData);
-            const obj = movieData.forEach(movie => {
-                console.log("this is the object inside of the movie data fo reach", obj)
-                return new movieData(movie);
+            console.log("this is the movieData", movieData);
+            const carl = movieData.map(movie => {
+                return new Movie(movie);
+
             });
+            response.status(200).send(carl);
         }).catch( error => {
             console.log('Are we in Jurasic Park? because we\'ve got Air ROARRrrrRr', error);
         });
@@ -147,14 +148,15 @@ function Trail (obj){
     this.condition_date = obj.conditionDate;
     this.condition_time = obj.condition_time;
 }
-function Movie (movie){
-this.title = movie.title;
-this.overview = movie.overview;
-this.average_votes = movie.vote_average;
-this.total_votes = movie.vote_count;
-this.image_url = movie.poster_path;
-this.popularity = movie.popularity;
-this.released_on = release_date;
+function Movie (moovie){
+this.title = moovie.title;
+this.overview = moovie.overview;
+this.average_votes = moovie.vote_average;
+this.total_votes = moovie.vote_count;
+this.image_url = moovie.poster_path;
+this.popularity = moovie.popularity;
+this.released_on = moovie.release_date;
+console.log(moovie, 'this is moovie town')
 };
 
 app.get('*', (request, response) => {
