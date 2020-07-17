@@ -182,9 +182,10 @@ function Movie (moovie){
     this.overview = moovie.overview;
     this.average_votes = moovie.vote_average;
     this.total_votes = moovie.vote_count;
-    this.image_url = `https://image.tmdb.org/t/p/original${moovie.poster_path}`;
+    this.image_url = `https://image.tmdb.org/t/p/original/`/* ? `https://image.tmdb.org/t/p/original${moovie.poster_path}` : 'https://drinktheworld.beasleydotcom.repl.co/beasAtHole.jpg'*/;
     this.popularity = moovie.popularity;
     this.released_on = moovie.release_date;
+    console.log('this is the image url',this.image_url);
 
 };
 
