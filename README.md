@@ -30,5 +30,9 @@ It took me about 6 hours to to complete these features.
 I didn't really understand the trello cards at first, and it took a lot of help from Chance, David, and Meghan to get through it. 
 I didn't read the thing about making a time estimate until now... 10pm. I started at 1:30pm and finished at 10pm 7/15/2020.
 
+#### 
+It took me 8 and a half hours to finish this lab.
+Had help from Meghan Domeck and Amber Falbo in navigating the challenge of connecting with Yelp. 
+
 
 
