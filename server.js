@@ -69,9 +69,7 @@ function movieFunk (request, response){
     superagent.get(url)
         .query(movieParams)
         .then(resultsFromMovieApi => {
-            // console.log(url," url and the movie params", movieParams);
             let movieData = resultsFromMovieApi.body.results;
-            console.log("this is the movieData", movieData);
             const carl = movieData.map(movie => {
                 return new Movie(movie);
 
@@ -87,18 +85,17 @@ function pleaseYelpMe(request, response){
     const start = ((page -1) * numPerPage + 1);
     let url = 'https://api.yelp.com/v3/businesses/search';
     let yelpParams = {
-       lat: request.query.latitude,
-       lon: request.query.longitude,
+       latitude: request.query.latitude,
+       longitude: request.query.longitude,
        start: start,
        count: numPerPage
     };
     superagent.get(url)
         .set({'Authorization':`Bearer ${process.env.YELP_API_KEY}`})
         .query(yelpParams)
-        .then(resultsFromYelpApi => 
-            // console.log(url," url and the movie params", movieParams);
+        .then(resultsFromYelpApi => {
             const resultsArray = resultsFromYelpApi.body.businesses;
-            const restaurantData = resultsFromYelpApi.map(eatery => {
+            const restaurantData = resultsArray.map(eatery => {
                 return new Restaurant(eatery);
             });
             response.status(200).send(restaurantData);
@@ -181,14 +178,14 @@ function Trail (obj){
     this.condition_time = obj.condition_time;
 }
 function Movie (moovie){
-this.title = moovie.title;
-this.overview = moovie.overview;
-this.average_votes = moovie.vote_average;
-this.total_votes = moovie.vote_count;
-this.image_url = moovie.poster_path;
-this.popularity = moovie.popularity;
-this.released_on = moovie.release_date;
-console.log(moovie, 'this is moovie town')
+    this.title = moovie.title;
+    this.overview = moovie.overview;
+    this.average_votes = moovie.vote_average;
+    this.total_votes = moovie.vote_count;
+    this.image_url = `https://image.tmdb.org/t/p/original${moovie.poster_path}`;
+    this.popularity = moovie.popularity;
+    this.released_on = moovie.release_date;
+
 };
 
 app.get('*', (request, response) => {
