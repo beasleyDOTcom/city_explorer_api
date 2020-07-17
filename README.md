@@ -1,7 +1,7 @@
 # city_explorer_api
 
 **Author**: Joshua Beasley
-**Version**: 1.0.3 
+**Version**: 1.0.7 
 
 ## Overview
 I am building an API server, which will provide data for the City Explorer Application, allowing a user to search for a location, present a Map, as well as interesting information about the area, all using data from APIs that this server will fetch and manage.
@@ -10,7 +10,7 @@ I am building an API server, which will provide data for the City Explorer Appli
 I am building a server that will reveive a search queiry from the user. Then connect that search quiery with the corelated map and weather data, then return that data back to the client in the format in which it requires. 
 
 ## Architecture
-This server/app uses node, express, cors, and superagent.
+This server/app uses node, express, cors, superagent, postgress, and sql.
 
 ## Change Log
 #### 
@@ -25,6 +25,10 @@ finished the second feature at 6:30 pm 7/14/2020
 I got succesfully connected the location api and my app with the front end website at 3:45 pm July 14th 2020.
 
 just finished feature 3 / trail data 8 pm July 14th 2020
+#### 
+It took me about 6 hours to to complete these features.
+I didn't really understand the trello cards at first, and it took a lot of help from Chance, David, and Meghan to get through it. 
+I didn't read the thing about making a time estimate until now... 10pm. I started at 1:30pm and finished at 10pm 7/15/2020.
 
 
 
