@@ -20,6 +20,7 @@ app.get('/location', bungleLocation);
 app.get('/weather', bungleWeather);
 app.get('/trails', bungleTrails);
 app.get('/movies', movieFunk);
+app.get('/yelp', pleaseYelpMe);
 
 function bungleLocation(request, response){    
     let city = request.query.city;
@@ -80,6 +81,31 @@ function movieFunk (request, response){
             console.log('Are we in Jurasic Park? because we\'ve got Air ROARRrrrRr', error);
         });
 }
+function pleaseYelpMe(request, response){
+    const numPerPage = 5;
+    const page = request.query.page || +1;
+    const start = ((page -1) * numPerPage + 1);
+    let url = 'https://api.yelp.com/v3/businesses/search';
+    let yelpParams = {
+       lat: request.query.latitude,
+       lon: request.query.longitude,
+       start: start,
+       count: numPerPage
+    };
+    superagent.get(url)
+        .set({'Authorization':`Bearer ${process.env.YELP_API_KEY}`})
+        .query(yelpParams)
+        .then(resultsFromYelpApi => 
+            // console.log(url," url and the movie params", movieParams);
+            const resultsArray = resultsFromYelpApi.body.businesses;
+            const restaurantData = resultsFromYelpApi.map(eatery => {
+                return new Restaurant(eatery);
+            });
+            response.status(200).send(restaurantData);
+        }).catch( error => {
+            console.log("We've got errorstaurant problems", error);
+        });
+}
 function bungleWeather(request, response){    
     let city = request.query.city;
     let url = 'https://api.weatherbit.io/v2.0/forecast/daily';
@@ -135,7 +161,13 @@ function Weather (totes){
     this.forecast = totes.weather.description;
     this.time = new Date(totes.valid_date).toDateString();
 };
-
+function Restaurant(eatery){
+    this.name = eatery.name;
+    this.image_url = eatery.image_url;
+    this.price = eatery.price;
+    this.rating = eatery.rating;
+    this.url = eatery.url;
+}
 function Trail (obj){
     this.name = obj.name;
     this.location = obj.location;
