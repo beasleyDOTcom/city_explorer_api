@@ -88,7 +88,7 @@ function pleaseYelpMe(request, response){
        latitude: request.query.latitude,
        longitude: request.query.longitude,
        start: start,
-       count: numPerPage
+       limit: numPerPage
     };
     superagent.get(url)
         .set({'Authorization':`Bearer ${process.env.YELP_API_KEY}`})
